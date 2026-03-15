@@ -9,29 +9,32 @@ import SwiftUI
 struct LandingView: View {
     var body: some View {
         NavigationStack {
-            VStack(spacing: 40) {
+            VStack(spacing: 60) {
                 Text("Welcome to GMJK Lockers!")
                     .font(AppFonts.title)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.center)
-                    .padding(.top, 60)
-                
+                    .padding(.top, 80)
+
                 NavigationLink(destination: LoginView()) {
                     AppButtons.primary("Login")
                         .padding(.horizontal)
                 }
-                
+
                 HStack {
                     Text("Don't have an account?")
-                        .font(AppFonts.body)
+                        .foregroundColor(.white)
                     NavigationLink(destination: RegisterView()) {
-                        AppButtons.secondary("Sign Up")
+                        Text("Sign Up")
+                            .bold()
+                            .foregroundColor(.cyan)
                     }
                 }
-                
+
                 Spacer()
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(AppColors.background.ignoresSafeArea())
-            .navigationTitle("")
             .navigationBarHidden(true)
         }
     }

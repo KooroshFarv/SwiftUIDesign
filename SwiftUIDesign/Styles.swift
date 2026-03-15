@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct AppColors {
-    static let primary = Color.blue
-    static let secondary = Color.gray.opacity(0.7)
-    static let background = Color("Background")
+    static let background = Color(.darkGray)
+    static let secondary = Color(.lightGray)
+    static let primaryButton = Color.cyan
+    static let secondaryButton = Color.gray.opacity(0.7)
+    static let destructiveButton = Color.red
 }
 
 struct AppFonts {
@@ -20,20 +22,33 @@ struct AppFonts {
 }
 
 struct AppButtons {
-    static func primary(_ text: String) -> some View {
-        Text(text)
-            .font(AppFonts.heading)
-            .frame(maxWidth: .infinity)
+    static func primary(_ title: String) -> some View {
+        Text(title)
+            .font(.headline)
+            .foregroundColor(.black)
             .padding()
-            .background(AppColors.primary)
-            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .background(AppColors.primaryButton)
             .cornerRadius(10)
-            .shadow(radius: 3)
     }
     
-    static func secondary(_ text: String) -> some View {
-        Text(text)
-            .bold()
-            .foregroundColor(AppColors.primary)
+    static func secondary(_ title: String) -> some View {
+        Text(title)
+            .font(.headline)
+            .foregroundColor(.white)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(AppColors.secondaryButton)
+            .cornerRadius(10)
+    }
+    
+    static func destructive(_ title: String) -> some View {
+        Text(title)
+            .font(.headline)
+            .foregroundColor(.white)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(AppColors.destructiveButton)
+            .cornerRadius(10)
     }
 }

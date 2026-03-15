@@ -11,33 +11,55 @@ struct RegisterView: View {
     @State private var name = ""
     @State private var email = ""
     @State private var password = ""
+    @State private var navigateHome = false
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 30) {
+            HStack {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.cyan)
+                    Text("Back")
+                        .foregroundColor(.cyan)
+                }
+                Spacer()
+            }
+            .padding(.horizontal)
+            
             Text("Sign Up")
-                .font(.largeTitle)
-                .bold()
-                .padding(.top, 40)
+                .font(AppFonts.heading)
+                .foregroundColor(.white)
             
             TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
-                .padding(.horizontal)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+                .foregroundColor(.white)
             
             TextField("Email", text: $email)
-                .textFieldStyle(.roundedBorder)
-                .padding(.horizontal)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+                .foregroundColor(.white)
             
             SecureField("Password", text: $password)
-                .textFieldStyle(.roundedBorder)
-                .padding(.horizontal)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+                .foregroundColor(.white)
             
-            NavigationLink("Create Account", destination: HomeView())
-                .buttonStyle(.borderedProminent)
-                .padding(.top, 20)
+            NavigationLink(destination: HomeView(), isActive: $navigateHome) {
+                Button(action: { navigateHome = true }) {
+                    AppButtons.primary("Create Account")
+                }
+            }
             
             Spacer()
         }
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.background.ignoresSafeArea())
+        .navigationBarHidden(true)
     }
 }
