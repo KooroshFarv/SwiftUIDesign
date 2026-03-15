@@ -53,6 +53,16 @@ struct LockerListView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
+
+                NavigationLink(destination: ScanQRView()) {
+                    Label("Scan Locker QR", systemImage: "qrcode.viewfinder")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .foregroundStyle(.white)
+                        .cornerRadius(12)
+                        .padding()
+                }
             }
             .searchable(text: $searchText, prompt: "Search by ID or floor")
             .navigationTitle("Available Lockers")
@@ -230,7 +240,7 @@ struct LockerDetailView: View {
     }
 }
 
-// MARK: - Rent Confirmation Sheet
+// MARK: - confirmation
 
 struct RentConfirmationSheet: View {
     let locker: Locker
@@ -374,7 +384,7 @@ struct RentalHistoryView: View {
     }
 }
 
-// ui
+// MARK: - Shared UI Components
 
 private struct FilterPill: View {
     let label: String
@@ -448,8 +458,6 @@ private struct FeatureRow: View {
         .padding(.vertical, 12)
     }
 }
-
-
 
 extension Locker.LockerStatus {
     var color: Color {
