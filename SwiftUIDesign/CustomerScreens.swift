@@ -30,12 +30,12 @@ struct LockerListView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Size filter pills
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         FilterPill(label: "All", isSelected: selectedSize == nil) {
                             selectedSize = nil
                         }
+
                         ForEach([Locker.LockerSize.small, .medium, .large], id: \.self) { size in
                             FilterPill(label: size.rawValue, isSelected: selectedSize == size) {
                                 selectedSize = selectedSize == size ? nil : size
@@ -74,7 +74,6 @@ private struct LockerRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            // Status dot
             Circle()
                 .fill(locker.status.color)
                 .frame(width: 12, height: 12)
@@ -83,11 +82,14 @@ private struct LockerRow: View {
                 HStack {
                     Text("Locker \(locker.id)")
                         .font(.headline)
+
                     Spacer()
-                    Text("$\(locker.hourlyRate, specifier: "%.2f")/hr")
+
+                    Text("$" + String(format: "%.2f", locker.hourlyRate) + "/hr")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
+
                 HStack(spacing: 6) {
                     Label(locker.floor, systemImage: "building.2")
                     Text("·")
@@ -115,17 +117,20 @@ struct LockerDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Header card
                 VStack(spacing: 12) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Locker \(locker.id)")
-                                .font(.largeTitle).bold()
+                                .font(.largeTitle)
+                                .bold()
+
                             Text(locker.floor)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
+
                         Spacer()
+
                         StatusBadge(status: locker.status)
                             .scaleEffect(1.2)
                     }
@@ -133,11 +138,18 @@ struct LockerDetailView: View {
                     Divider()
 
                     HStack(spacing: 0) {
-                        DetailStat(icon: "square.resize", label: "Size",  value: locker.size.rawValue)
+                        DetailStat(icon: "square.resize", label: "Size", value: locker.size.rawValue)
+
                         Divider().frame(height: 40)
-                        DetailStat(icon: "dollarsign.circle", label: "Rate",
-                                   value: "$\(locker.hourlyRate, specifier: "%.2f")/hr")
+
+                        DetailStat(
+                            icon: "dollarsign.circle",
+                            label: "Rate",
+                            value: "$" + String(format: "%.2f", locker.hourlyRate) + "/hr"
+                        )
+
                         Divider().frame(height: 40)
+
                         DetailStat(icon: "mappin.and.ellipse", label: "Floor", value: locker.floor)
                     }
                 }
@@ -146,27 +158,25 @@ struct LockerDetailView: View {
                 .cornerRadius(14)
                 .padding(.horizontal)
 
-                // Features
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Features")
                         .font(.headline)
                         .padding(.horizontal)
 
                     VStack(spacing: 0) {
-                        FeatureRow(icon: "lock.shield.fill",  text: "Secure Digital Lock",   color: .blue)
+                        FeatureRow(icon: "lock.shield.fill", text: "Secure Digital Lock", color: .blue)
                         Divider().padding(.leading, 52)
-                        FeatureRow(icon: "clock.fill",        text: "24/7 Access",            color: .green)
+                        FeatureRow(icon: "clock.fill", text: "24/7 Access", color: .green)
                         Divider().padding(.leading, 52)
-                        FeatureRow(icon: "bell.fill",         text: "Expiry Reminders",       color: .orange)
+                        FeatureRow(icon: "bell.fill", text: "Expiry Reminders", color: .orange)
                         Divider().padding(.leading, 52)
-                        FeatureRow(icon: "qrcode",            text: "QR Code Entry",          color: .purple)
+                        FeatureRow(icon: "qrcode", text: "QR Code Entry", color: .purple)
                     }
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(14)
                     .padding(.horizontal)
                 }
 
-                // Duration picker (only if available)
                 if locker.status == .available {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Rental Duration")
@@ -174,17 +184,23 @@ struct LockerDetailView: View {
                             .padding(.horizontal)
 
                         VStack(spacing: 12) {
-                            Stepper("**\(selectedHours)** \(selectedHours == 1 ? "hour" : "hours")",
-                                    value: $selectedHours, in: 1...24)
+                            Stepper(
+                                "**\(selectedHours)** \(selectedHours == 1 ? "hour" : "hours")",
+                                value: $selectedHours,
+                                in: 1...24
+                            )
 
                             Divider()
 
                             HStack {
                                 Text("Total")
                                     .foregroundStyle(.secondary)
+
                                 Spacer()
-                                Text("$\(totalPrice, specifier: "%.2f")")
-                                    .font(.title3).bold()
+
+                                Text("$" + String(format: "%.2f", totalPrice))
+                                    .font(.title3)
+                                    .bold()
                             }
                         }
                         .padding()
@@ -220,20 +236,21 @@ struct RentConfirmationSheet: View {
     let locker: Locker
     let hours: Int
     let total: Double
+
     @Environment(\.dismiss) private var dismiss
     @State private var confirmed = false
 
     var body: some View {
         NavigationStack {
             if confirmed {
-                // Access code screen
                 VStack(spacing: 24) {
                     Image(systemName: "checkmark.seal.fill")
                         .font(.system(size: 60))
                         .foregroundStyle(.green)
 
                     Text("Locker Rented!")
-                        .font(.title).bold()
+                        .font(.title)
+                        .bold()
 
                     Text("Your access code")
                         .foregroundStyle(.secondary)
@@ -257,16 +274,18 @@ struct RentConfirmationSheet: View {
             } else {
                 Form {
                     Section("Rental Summary") {
-                        LabeledContent("Locker",   value: locker.id)
-                        LabeledContent("Floor",    value: locker.floor)
-                        LabeledContent("Size",     value: locker.size.rawValue)
+                        LabeledContent("Locker", value: locker.id)
+                        LabeledContent("Floor", value: locker.floor)
+                        LabeledContent("Size", value: locker.size.rawValue)
                         LabeledContent("Duration", value: "\(hours) \(hours == 1 ? "hour" : "hours")")
-                        LabeledContent("Total",    value: "$\(total, specifier: "%.2f")")
+                        LabeledContent("Total", value: "$" + String(format: "%.2f", total))
                     }
 
                     Section {
-                        Button("Confirm & Pay") { confirmed = true }
-                            .frame(maxWidth: .infinity)
+                        Button("Confirm & Pay") {
+                            confirmed = true
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .navigationTitle("Confirm Rental")
@@ -293,8 +312,10 @@ struct RentalHistoryView: View {
                 HStack {
                     Text("Locker \(rental.lockerID)")
                         .font(.headline)
+
                     Spacer()
-                    Text("$\(rental.totalPaid, specifier: "%.2f")")
+
+                    Text("$" + String(format: "%.2f", rental.totalPaid))
                         .font(.subheadline.bold())
                         .foregroundStyle(.green)
                 }
@@ -327,18 +348,23 @@ struct RentalHistoryView: View {
         .sheet(item: $showCodeFor) { rental in
             VStack(spacing: 20) {
                 Text("Access Code")
-                    .font(.title2).bold()
+                    .font(.title2)
+                    .bold()
+
                 Text("Locker \(rental.lockerID) · \(rental.formattedDate)")
                     .foregroundStyle(.secondary)
+
                 Text(rental.accessCode)
                     .font(.system(size: 42, weight: .bold, design: .monospaced))
                     .kerning(6)
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(12)
+
                 Text("(Rental has ended)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+
                 Button("Close") { showCodeFor = nil }
                     .buttonStyle(.bordered)
             }
@@ -348,7 +374,7 @@ struct RentalHistoryView: View {
     }
 }
 
-// MARK: - Shared UI Components
+// ui
 
 private struct FilterPill: View {
     let label: String
@@ -391,8 +417,10 @@ private struct DetailStat: View {
         VStack(spacing: 4) {
             Image(systemName: icon)
                 .foregroundStyle(.secondary)
+
             Text(value)
                 .font(.subheadline.bold())
+
             Text(label)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
@@ -411,7 +439,9 @@ private struct FeatureRow: View {
             Image(systemName: icon)
                 .foregroundStyle(color)
                 .frame(width: 28)
+
             Text(text)
+
             Spacer()
         }
         .padding(.horizontal)
@@ -419,14 +449,17 @@ private struct FeatureRow: View {
     }
 }
 
-// MARK: - Color extension for LockerStatus
+
 
 extension Locker.LockerStatus {
     var color: Color {
         switch self {
-        case .available: return .green
-        case .inUse:     return .red
-        case .reserved:  return .orange
+        case .available:
+            return .green
+        case .inUse:
+            return .red
+        case .reserved:
+            return .orange
         }
     }
 }

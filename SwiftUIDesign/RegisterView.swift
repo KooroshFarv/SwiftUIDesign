@@ -49,7 +49,7 @@ struct RegisterView: View {
                 .cornerRadius(10)
                 .foregroundColor(.white)
             
-            NavigationLink(destination: HomeView(), isActive: $navigateHome) {
+            NavigationLink(destination: LockerListView(), isActive: $navigateHome) {
                 Button(action: { navigateHome = true }) {
                     AppButtons.primary("Create Account")
                 }

@@ -16,17 +16,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-                Section("Other") {
-                    NavigationLink("History") { HistoryView() }
-                    NavigationLink("Settings") { SettingsView() }
-                }
-
-                Section("Gurnoor — Customer Screens") {
-                    NavigationLink("Locker List") { LockerListView() }
-                    NavigationLink("Rental History") { RentalHistoryView() }
-                }
-            }
-            .navigationTitle("Screens")
-        }
+             
     }
 }
