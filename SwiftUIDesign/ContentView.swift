@@ -9,27 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        NavigationStack {
-            List {
-                Section("Auth") {
-                    NavigationLink("Login") { LoginView() }
-                    NavigationLink("Register") { RegisterView() }
-                }
+        LandingView()
+    }
+}
 
-                Section("Main") {
-                    NavigationLink("Home") { HomeView() }
-                    NavigationLink("Scan QR") { ScanQRView() }
-                    NavigationLink("Locker Details") { LockerDetailsView() }
-                    NavigationLink("Payment") { PaymentView() }
-                    NavigationLink("Active Rental") { ActiveRentalView() }
-                }
-
-                Section("Other") {
-                    NavigationLink("History") { HistoryView() }
-                    NavigationLink("Settings") { SettingsView() }
-                }
-            }
-            .navigationTitle("Screens")
-        }
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
 }
