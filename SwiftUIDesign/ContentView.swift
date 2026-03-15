@@ -28,6 +28,11 @@ struct ContentView: View {
                     NavigationLink("History") { HistoryView() }
                     NavigationLink("Settings") { SettingsView() }
                 }
+
+                Section("Gurnoor — Customer Screens") {
+                    NavigationLink("Locker List") { LockerListView() }
+                    NavigationLink("Rental History") { RentalHistoryView() }
+                }
             }
             .navigationTitle("Screens")
         }
