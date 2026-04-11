@@ -17,6 +17,8 @@ struct Locker: Identifiable {
     var status: LockerStatus
     var currentUserName: String?
     var rentalEndsAt: Date?
+    let latitude: Double
+    let longitude: Double
 
     enum LockerSize: String {
         case small  = "Small"
@@ -63,18 +65,28 @@ struct Rental: Identifiable {
 
 struct SampleData {
     static let lockers: [Locker] = [
-        Locker(id: "A-01", size: .small,  floor: "Ground Floor", hourlyRate: 2.00, status: .available),
+        Locker(id: "A-01", size: .small,  floor: "Ground Floor", hourlyRate: 2.00, status: .available,
+               latitude: 43.65027, longitude: -79.37055),
         Locker(id: "A-02", size: .small,  floor: "Ground Floor", hourlyRate: 2.00, status: .inUse,
-               currentUserName: "Alex T.", rentalEndsAt: Date().addingTimeInterval(3600)),
-        Locker(id: "A-03", size: .medium, floor: "Ground Floor", hourlyRate: 3.50, status: .available),
-        Locker(id: "B-01", size: .medium, floor: "Level 1",      hourlyRate: 3.50, status: .available),
+               currentUserName: "Alex T.", rentalEndsAt: Date().addingTimeInterval(3600),
+               latitude: 43.65041, longitude: -79.37020),
+        Locker(id: "A-03", size: .medium, floor: "Ground Floor", hourlyRate: 3.50, status: .available,
+               latitude: 43.65055, longitude: -79.36988),
+        Locker(id: "B-01", size: .medium, floor: "Level 1",      hourlyRate: 3.50, status: .available,
+               latitude: 43.65018, longitude: -79.37090),
         Locker(id: "B-02", size: .large,  floor: "Level 1",      hourlyRate: 5.00, status: .inUse,
-               currentUserName: "Sam R.", rentalEndsAt: Date().addingTimeInterval(7200)),
-        Locker(id: "B-03", size: .large,  floor: "Level 1",      hourlyRate: 5.00, status: .available),
-        Locker(id: "B-11", size: .medium, floor: "Gym Floor",    hourlyRate: 3.00, status: .available),
-        Locker(id: "C-01", size: .small,  floor: "Level 2",      hourlyRate: 2.00, status: .reserved),
-        Locker(id: "C-02", size: .medium, floor: "Level 2",      hourlyRate: 3.50, status: .available),
-        Locker(id: "C-03", size: .large,  floor: "Level 2",      hourlyRate: 5.00, status: .available),
+               currentUserName: "Sam R.", rentalEndsAt: Date().addingTimeInterval(7200),
+               latitude: 43.65003, longitude: -79.37112),
+        Locker(id: "B-03", size: .large,  floor: "Level 1",      hourlyRate: 5.00, status: .available,
+               latitude: 43.64992, longitude: -79.37078),
+        Locker(id: "B-11", size: .medium, floor: "Gym Floor",    hourlyRate: 3.00, status: .available,
+               latitude: 43.64978, longitude: -79.37042),
+        Locker(id: "C-01", size: .small,  floor: "Level 2",      hourlyRate: 2.00, status: .reserved,
+               latitude: 43.65068, longitude: -79.37135),
+        Locker(id: "C-02", size: .medium, floor: "Level 2",      hourlyRate: 3.50, status: .available,
+               latitude: 43.65082, longitude: -79.37100),
+        Locker(id: "C-03", size: .large,  floor: "Level 2",      hourlyRate: 5.00, status: .available,
+               latitude: 43.65096, longitude: -79.37068),
     ]
 
     static let rentalHistory: [Rental] = [

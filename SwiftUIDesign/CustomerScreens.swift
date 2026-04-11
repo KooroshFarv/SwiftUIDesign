@@ -68,9 +68,9 @@ struct LockerListView: View {
             .navigationTitle("Available Lockers")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Text("\(filtered.filter { $0.status == .available }.count) available")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    NavigationLink(destination: LockerMapView()) {
+                        Image(systemName: "map.fill")
+                    }
                 }
             }
         }
