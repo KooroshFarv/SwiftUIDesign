@@ -31,6 +31,7 @@ struct ContentView: View {
 
                 Section("Gurnoor — Customer Screens") {
                     NavigationLink("Locker List") { LockerListView() }
+                    NavigationLink("Locker Map") { LockerMapView() }
                     NavigationLink("Rental History") { RentalHistoryView() }
                 }
             }
