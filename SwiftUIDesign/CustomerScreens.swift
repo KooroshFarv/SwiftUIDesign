@@ -33,12 +33,16 @@ struct LockerListView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     FilterPill(label: "All", isSelected: selectedSize == nil) {
-                        selectedSize = nil
+                        withAnimation(.spring()) {
+                            selectedSize = nil
+                        }
                     }
 
                     ForEach([Locker.LockerSize.small, .medium, .large], id: \.self) { size in
                         FilterPill(label: size.rawValue, isSelected: selectedSize == size) {
-                            selectedSize = selectedSize == size ? nil : size
+                            withAnimation(.spring()) {
+                                selectedSize = selectedSize == size ? nil : size
+                            }
                         }
                     }
                 }
@@ -47,9 +51,27 @@ struct LockerListView: View {
             }
             .background(Color(.systemGroupedBackground))
 
-            List(filtered) { locker in
-                NavigationLink(destination: LockerDetailView(locker: locker)) {
-                    LockerRow(locker: locker)
+            List {
+                if filtered.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 50))
+                            .foregroundStyle(.secondary)
+                        Text("No lockers found")
+                            .foregroundStyle(.secondary)
+                            .font(.headline)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ForEach(filtered) { locker in
+                        NavigationLink(destination: LockerDetailView(locker: locker)) {
+                            LockerRow(locker: locker)
+                                .padding(.vertical, 4)
+                                .background(Color(.systemBackground))
+                                .cornerRadius(12)
+                                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+                        }
+                    }
                 }
             }
             .listStyle(.insetGrouped)
@@ -61,7 +83,8 @@ struct LockerListView: View {
                     .background(Color.accentColor)
                     .foregroundStyle(.white)
                     .cornerRadius(12)
-                    .padding()
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
             }
         }
         .searchable(text: $searchText, prompt: "Search by ID or floor")
