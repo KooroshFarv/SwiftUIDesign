@@ -13,14 +13,14 @@ import MapKit
 // MARK: - Locker Map View
 
 struct LockerMapView: View {
-    let lockers: [Locker] = SampleData.lockers
+    @EnvironmentObject var store: LockerStore
 
     @State private var selectedLocker: Locker? = nil
     @State private var selectedFilter: Locker.LockerStatus? = nil
 
     private var visibleLockers: [Locker] {
-        guard let filter = selectedFilter else { return lockers }
-        return lockers.filter { $0.status == filter }
+        guard let filter = selectedFilter else { return store.lockers }
+        return store.lockers.filter { $0.status == filter }
     }
 
     // Center on the cluster of lockers
@@ -41,16 +41,19 @@ struct LockerMapView: View {
                                   isSelected: selectedFilter == nil) {
                         selectedFilter = nil
                     }
+
                     MapFilterPill(label: "Available",
                                   color: .green,
                                   isSelected: selectedFilter == .available) {
                         selectedFilter = selectedFilter == .available ? nil : .available
                     }
+
                     MapFilterPill(label: "In Use",
                                   color: .red,
                                   isSelected: selectedFilter == .inUse) {
                         selectedFilter = selectedFilter == .inUse ? nil : .inUse
                     }
+
                     MapFilterPill(label: "Reserved",
                                   color: .orange,
                                   isSelected: selectedFilter == .reserved) {
@@ -156,6 +159,7 @@ private struct LockerMapDetailSheet: View {
                         Circle()
                             .fill(locker.status.color.opacity(0.15))
                             .frame(width: 64, height: 64)
+
                         Image(systemName: locker.status == .available ? "lock.open.fill" : "lock.fill")
                             .font(.system(size: 28))
                             .foregroundStyle(locker.status.color)
@@ -163,23 +167,36 @@ private struct LockerMapDetailSheet: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Locker \(locker.id)")
-                            .font(.title2).bold()
+                            .font(.title2)
+                            .bold()
+
                         StatusBadge(status: locker.status)
                     }
+
                     Spacer()
                 }
                 .padding(.horizontal)
 
                 // Info grid
                 VStack(spacing: 0) {
-                    MapDetailRow(icon: "building.2",      label: "Floor",    value: locker.floor)
+                    MapDetailRow(icon: "building.2", label: "Floor", value: locker.floor)
                     Divider().padding(.leading, 52)
-                    MapDetailRow(icon: "square.resize",   label: "Size",     value: locker.size.rawValue)
+
+                    MapDetailRow(icon: "square.resize", label: "Size", value: locker.size.rawValue)
                     Divider().padding(.leading, 52)
-                    MapDetailRow(icon: "dollarsign.circle", label: "Rate",   value: "$\(locker.hourlyRate, specifier: "%.2f")/hr")
+
+                    MapDetailRow(
+                        icon: "dollarsign.circle",
+                        label: "Rate",
+                        value: String(format: "$%.2f/hr", locker.hourlyRate)
+                    )
                     Divider().padding(.leading, 52)
-                    MapDetailRow(icon: "location.fill",   label: "Coordinates",
-                                 value: String(format: "%.5f, %.5f", locker.latitude, locker.longitude))
+
+                    MapDetailRow(
+                        icon: "location.fill",
+                        label: "Coordinates",
+                        value: String(format: "%.5f, %.5f", locker.latitude, locker.longitude)
+                    )
                 }
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(14)
@@ -224,9 +241,12 @@ private struct MapDetailRow: View {
             Image(systemName: icon)
                 .foregroundStyle(.secondary)
                 .frame(width: 28)
+
             Text(label)
                 .foregroundStyle(.secondary)
+
             Spacer()
+
             Text(value)
                 .font(.subheadline)
                 .foregroundStyle(.primary)
@@ -250,6 +270,7 @@ private struct MapFilterPill: View {
                 Circle()
                     .fill(color)
                     .frame(width: 8, height: 8)
+
                 Text(label)
                     .font(.subheadline)
             }

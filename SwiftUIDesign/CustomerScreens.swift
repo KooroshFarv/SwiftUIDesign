@@ -9,68 +9,75 @@
 
 import SwiftUI
 
-// MARK: - Locker List (Home)
+// MARK: - Locker List (home)
 
 struct LockerListView: View {
+    @EnvironmentObject var store: LockerStore
+
     @State private var searchText = ""
     @State private var selectedSize: Locker.LockerSize? = nil
 
-    var lockers: [Locker] { SampleData.lockers }
-
     var filtered: [Locker] {
-        lockers.filter { locker in
+        store.lockers.filter { locker in
             let matchesSearch = searchText.isEmpty ||
                 locker.id.localizedCaseInsensitiveContains(searchText) ||
                 locker.floor.localizedCaseInsensitiveContains(searchText)
+
             let matchesSize = selectedSize == nil || locker.size == selectedSize
             return matchesSearch && matchesSize
         }
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        FilterPill(label: "All", isSelected: selectedSize == nil) {
-                            selectedSize = nil
-                        }
+        VStack(spacing: 0) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    FilterPill(label: "All", isSelected: selectedSize == nil) {
+                        selectedSize = nil
+                    }
 
-                        ForEach([Locker.LockerSize.small, .medium, .large], id: \.self) { size in
-                            FilterPill(label: size.rawValue, isSelected: selectedSize == size) {
-                                selectedSize = selectedSize == size ? nil : size
-                            }
+                    ForEach([Locker.LockerSize.small, .medium, .large], id: \.self) { size in
+                        FilterPill(label: size.rawValue, isSelected: selectedSize == size) {
+                            selectedSize = selectedSize == size ? nil : size
                         }
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
                 }
-                .background(Color(.systemGroupedBackground))
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+            }
+            .background(Color(.systemGroupedBackground))
 
-                List(filtered) { locker in
-                    NavigationLink(destination: LockerDetailView(locker: locker)) {
-                        LockerRow(locker: locker)
-                    }
-                }
-                .listStyle(.insetGrouped)
-
-                NavigationLink(destination: ScanQRView()) {
-                    Label("Scan Locker QR", systemImage: "qrcode.viewfinder")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .foregroundStyle(.white)
-                        .cornerRadius(12)
-                        .padding()
+            List(filtered) { locker in
+                NavigationLink(destination: LockerDetailView(locker: locker)) {
+                    LockerRow(locker: locker)
                 }
             }
-            .searchable(text: $searchText, prompt: "Search by ID or floor")
-            .navigationTitle("Available Lockers")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: LockerMapView()) {
-                        Image(systemName: "map.fill")
-                    }
+            .listStyle(.insetGrouped)
+
+            NavigationLink(destination: ScanQRView()) {
+                Label("Scan Locker QR", systemImage: "qrcode.viewfinder")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.accentColor)
+                    .foregroundStyle(.white)
+                    .cornerRadius(12)
+                    .padding()
+            }
+        }
+        .searchable(text: $searchText, prompt: "Search by ID or floor")
+        .navigationTitle("Available Lockers")
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                NavigationLink(destination: RentalHistoryView()) {
+                    Image(systemName: "clock.arrow.circlepath")
+                }
+
+                NavigationLink(destination: SettingsView()) {
+                    Image(systemName: "gearshape.fill")
+                }
+
+                NavigationLink(destination: LockerMapView()) {
+                    Image(systemName: "map.fill")
                 }
             }
         }
@@ -119,10 +126,18 @@ private struct LockerRow: View {
 
 struct LockerDetailView: View {
     let locker: Locker
+
+    @EnvironmentObject var store: LockerStore
     @State private var selectedHours = 1
     @State private var showRentSheet = false
 
-    var totalPrice: Double { locker.hourlyRate * Double(selectedHours) }
+    var liveLocker: Locker {
+        store.lockerByID(locker.id) ?? locker
+    }
+
+    var totalPrice: Double {
+        liveLocker.hourlyRate * Double(selectedHours)
+    }
 
     var body: some View {
         ScrollView {
@@ -130,37 +145,33 @@ struct LockerDetailView: View {
                 VStack(spacing: 12) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Locker \(locker.id)")
+                            Text("Locker \(liveLocker.id)")
                                 .font(.largeTitle)
                                 .bold()
 
-                            Text(locker.floor)
+                            Text(liveLocker.floor)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
 
                         Spacer()
 
-                        StatusBadge(status: locker.status)
+                        StatusBadge(status: liveLocker.status)
                             .scaleEffect(1.2)
                     }
 
                     Divider()
 
                     HStack(spacing: 0) {
-                        DetailStat(icon: "square.resize", label: "Size", value: locker.size.rawValue)
-
+                        DetailStat(icon: "square.resize", label: "Size", value: liveLocker.size.rawValue)
                         Divider().frame(height: 40)
-
                         DetailStat(
                             icon: "dollarsign.circle",
                             label: "Rate",
-                            value: "$" + String(format: "%.2f", locker.hourlyRate) + "/hr"
+                            value: "$" + String(format: "%.2f", liveLocker.hourlyRate) + "/hr"
                         )
-
                         Divider().frame(height: 40)
-
-                        DetailStat(icon: "mappin.and.ellipse", label: "Floor", value: locker.floor)
+                        DetailStat(icon: "mappin.and.ellipse", label: "Floor", value: liveLocker.floor)
                     }
                 }
                 .padding()
@@ -187,7 +198,7 @@ struct LockerDetailView: View {
                     .padding(.horizontal)
                 }
 
-                if locker.status == .available {
+                if liveLocker.status == .available {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Rental Duration")
                             .font(.headline)
@@ -229,8 +240,12 @@ struct LockerDetailView: View {
                     }
                     .padding(.horizontal)
                     .sheet(isPresented: $showRentSheet) {
-                        RentConfirmationSheet(locker: locker, hours: selectedHours, total: totalPrice)
+                        RentConfirmationSheet(locker: liveLocker, hours: selectedHours, total: totalPrice)
                     }
+                } else {
+                    Text("This locker is currently unavailable.")
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
                 }
             }
             .padding(.vertical)
@@ -248,11 +263,14 @@ struct RentConfirmationSheet: View {
     let total: Double
 
     @Environment(\.dismiss) private var dismiss
-    @State private var confirmed = false
+    @EnvironmentObject var store: LockerStore
+
+    @State private var confirmedRental: Rental? = nil
+    @State private var showError = false
 
     var body: some View {
         NavigationStack {
-            if confirmed {
+            if let rental = confirmedRental {
                 VStack(spacing: 24) {
                     Image(systemName: "checkmark.seal.fill")
                         .font(.system(size: 60))
@@ -265,7 +283,7 @@ struct RentConfirmationSheet: View {
                     Text("Your access code")
                         .foregroundStyle(.secondary)
 
-                    Text("483 291")
+                    Text(rental.accessCode)
                         .font(.system(size: 48, weight: .bold, design: .monospaced))
                         .kerning(4)
                         .padding()
@@ -293,7 +311,11 @@ struct RentConfirmationSheet: View {
 
                     Section {
                         Button("Confirm & Pay") {
-                            confirmed = true
+                            if let rental = store.rentLocker(locker: locker, hours: hours) {
+                                confirmedRental = rental
+                            } else {
+                                showError = true
+                            }
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -305,6 +327,9 @@ struct RentConfirmationSheet: View {
                         Button("Cancel") { dismiss() }
                     }
                 }
+                .alert("This locker is no longer available.", isPresented: $showError) {
+                    Button("OK", role: .cancel) { }
+                }
             }
         }
     }
@@ -313,11 +338,11 @@ struct RentConfirmationSheet: View {
 // MARK: - Rental History
 
 struct RentalHistoryView: View {
+    @EnvironmentObject var store: LockerStore
     @State private var showCodeFor: Rental? = nil
-    let history = SampleData.rentalHistory
 
     var body: some View {
-        List(history) { rental in
+        List(store.rentalHistory) { rental in
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text("Locker \(rental.lockerID)")
@@ -436,6 +461,21 @@ private struct DetailStat: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
+    }
+}
+
+
+struct SettingsView: View {
+    var body: some View {
+        Form {
+            Section("Settings") {
+                Text("Profile")
+                Text("Notifications")
+                Button("Logout") { }
+                    .foregroundColor(.red)
+            }
+        }
+        .navigationTitle("Settings")
     }
 }
 

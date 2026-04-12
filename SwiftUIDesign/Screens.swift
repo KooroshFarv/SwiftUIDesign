@@ -8,47 +8,41 @@
 import SwiftUI
 
 struct ScanQRView: View {
+    @EnvironmentObject var store: LockerStore
+    @State private var scannedLocker: Locker? = nil
+
     var body: some View {
         VStack(spacing: 20) {
             Text("QR Scan Screen")
                 .font(AppFonts.heading)
                 .foregroundColor(.white)
 
-            Text("Camera integration coming soon")
+            Text("For demo purposes, simulate scanning a locker QR code.")
                 .foregroundColor(AppColors.secondary)
+                .multilineTextAlignment(.center)
 
-            Button("Scan") { }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(AppColors.primaryButton)
-                .foregroundColor(.black)
-                .cornerRadius(10)
-                .padding(.horizontal)
+            Button("Simulate Scan for Locker A-01") {
+                scannedLocker = store.lockerByID("A-01")
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(AppColors.primaryButton)
+            .foregroundColor(.black)
+            .cornerRadius(10)
+            .padding(.horizontal)
+
+            if let locker = scannedLocker {
+                NavigationLink(destination: LockerDetailView(locker: locker)) {
+                    Text("Go to Locker \(locker.id)")
+                        .foregroundColor(.cyan)
+                        .bold()
+                }
+            }
 
             Spacer()
         }
         .padding()
         .background(AppColors.background.ignoresSafeArea())
         .navigationTitle("Scan QR")
-    }
-}
-
-struct HistoryView: View {
-    var body: some View {
-        RentalHistoryView()
-    }
-}
-
-struct SettingsView: View {
-    var body: some View {
-        Form {
-            Section("Settings") {
-                Text("Profile")
-                Text("Notifications")
-                Button("Logout") { }
-                    .foregroundColor(.red)
-            }
-        }
-        .navigationTitle("Settings")
     }
 }

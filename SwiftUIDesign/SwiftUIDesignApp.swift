@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct SwiftUIDesignApp: App {
+    @StateObject private var store = LockerStore()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(store)
         }
     }
 }
