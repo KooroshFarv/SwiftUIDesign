@@ -169,7 +169,8 @@ struct LockerDetailView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Locker \(liveLocker.id)")
-                                .font(.largeTitle.bold())
+                                .font(.largeTitle)
+                                .bold()
 
                             Text(liveLocker.floor)
                                 .font(.subheadline)
@@ -242,7 +243,8 @@ struct LockerDetailView: View {
                                 Spacer()
 
                                 Text("$" + String(format: "%.2f", totalPrice))
-                                    .font(.title3.bold())
+                                    .font(.title3)
+                                    .bold()
                             }
                         }
                         .padding()
@@ -298,7 +300,8 @@ struct RentConfirmationSheet: View {
                         .foregroundStyle(.green)
 
                     Text("Locker Rented!")
-                        .font(.title.bold())
+                        .font(.title)
+                        .bold()
 
                     Text("Your access code")
                         .foregroundStyle(.secondary)
@@ -403,7 +406,8 @@ struct RentalHistoryView: View {
         .sheet(item: $showCodeFor) { rental in
             VStack(spacing: 20) {
                 Text("Access Code")
-                    .font(.title2.bold())
+                    .font(.title2)
+                    .bold()
 
                 Text("Locker \(rental.lockerID) · \(rental.formattedDate)")
                     .foregroundStyle(.secondary)
